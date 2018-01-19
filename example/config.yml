@@ -1,0 +1,30 @@
+global:
+  server:
+      host: localhost
+      port: 9144
+  grok_dir: ./patterns
+
+files:
+    - path: ./example/dns.log
+      readall: false
+      worker: 2
+      metric:
+        type: counter
+
+        name: query_type_total
+        help: Total number of query type .
+        match: '^%{NOTSPACE:date} %{TIME:time} queries: info: client %{IPORHOST:ip}%{GREEDYDATA:message} query: %{NOTSPACE:domain} IN %{WORD:type} %{NOTSPACE:message2} \(%{IPORHOST:server}\)$'
+        labels:
+            type: 'type'
+    # - path: ./example/rcpt.log
+    #   readall: true
+    #   worker: 1
+    #   customgroks:
+    #   - 'EXIM_MESSAGE [a-zA-Z ]*'
+    #   metric:
+    #     type: counter      
+    #     name: exim_rejected_rcpt_total
+    #     help: Total number of rejected recipients, partitioned by error message.
+    #     match: '%{EXIM_DATE} %{EXIM_REMOTE_HOST} F=<%{EMAILADDRESS}> rejected RCPT <%{EMAILADDRESS}>: %{EXIM_MESSAGE:message}'
+    #     labels:
+    #         error_message: 'message'
